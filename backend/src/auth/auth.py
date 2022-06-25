@@ -5,9 +5,9 @@ from jose import jwt
 from urllib.request import urlopen
 
 
-AUTH0_DOMAIN = 'udacity-fsnd.auth0.com'
+AUTH0_DOMAIN = 'dfauth.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'dev'
+API_AUDIENCE = 'coffeeshop'
 
 # AuthError Exception
 '''
@@ -35,7 +35,20 @@ class AuthError(Exception):
 
 
 def get_token_auth_header():
-    raise Exception('Not Implemented')
+    header = request.headers.get("Authorization")
+
+    if header is None:
+        raise AuthError("no header present", 400)
+
+    authorization = header.split(" ")
+
+    if len(authorization) != 2:
+        raise AuthError("malformed header", 400)
+    if authorization[0].lower() != 'bearer':
+        raise AuthError("Token Method Not Bearer ", 400)
+
+    return authorization[1]
+    # raise Exception('Not Implemented')
 
 
 '''
@@ -52,8 +65,11 @@ def get_token_auth_header():
 '''
 
 
-def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+def check_permissions(permission, payload: dict):
+    if "permissions" not in payload:
+        raise AuthError("permission not in payload", 400)
+    if permission not in payload["permissions"]:
+        raise AuthError("not permitted to perform action", 401)
 
 
 '''
@@ -73,7 +89,68 @@ def check_permissions(permission, payload):
 
 
 def verify_decode_jwt(token):
-    raise Exception('Not Implemented')
+    jsonurl = urlopen(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
+    jwks = json.loads(jsonurl.read())
+
+    try:
+        unverified_header = jwt.get_unverified_header(token)
+
+    except jwt.JWTError as e:
+        raise AuthError({
+            "code": "error decoding token",
+            "description": "the token supplied is invalid"
+        }, 401)
+
+    rsa_key = {}
+    for key in jwks["keys"]:
+        if key["kid"] == unverified_header["kid"]:
+            rsa_key = {
+                "kty": key["kty"],
+                "kid": key["kid"],
+                "use": key["use"],
+                "n": key["n"],
+                "e": key["e"]
+            }
+
+    if rsa_key:
+        try:
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=ALGORITHMS,
+                audience=API_AUDIENCE,
+                issuer=f"https://{AUTH0_DOMAIN}/"
+            )
+
+            return payload
+
+        except jwt.ExpiredSignatureError:
+            raise AuthError({
+                "code": "token expired",
+                "description": "token expired"
+            }, 401)
+
+        except jwt.JWTClaimsError:
+            raise AuthError({
+                "code": "invalid claims",
+                "description":
+                    "incorret claims,"
+                    "please check the audience and issuer"
+            }, 401)
+
+        except Exception:
+            raise AuthError({
+                "code": "invalid_header",
+                "description": "unable to parse authentication token."
+            }, 401)
+
+        # _request_ctx_stack.top.current_user = payload
+
+        raise AuthError({
+            "code": "invalid_header",
+            "description": "unable to find the appropriate key"
+        }, 401)
+    # raise Exception('Not Implemented')
 
 
 '''

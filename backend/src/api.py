@@ -8,8 +8,12 @@ from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
-setup_db(app)
+database = "database.db"
+setup_db(app, database)
 CORS(app)
+
+TOTAL_ITEMS_PER_PAGE = 10
+
 
 '''
 @TODO uncomment the following line to initialize the datbase
@@ -23,9 +27,9 @@ CORS(app)
 
 
 @app.route('/')
-@requires_auth
-def test():
-    return "hey"
+@requires_auth(permission="post:drinks")
+def test(payload):
+    return f"hey"
 
 
 '''
@@ -39,6 +43,24 @@ def test():
 '''
 
 
+@app.route("/drinks", methods=["GET"])
+def get_drinks():
+    try:
+        page = request.args.get("page", 1)
+        all_drinks = Drink.query.paginate(
+                        page=page,
+                        max_per_page=TOTAL_ITEMS_PER_PAGE)
+        drinks = [drink.short() for drink in all_drinks.items]
+
+        return jsonify({
+            "success": True,
+            "drinks": drinks
+        })
+
+    except Exception as e:
+        abort(500, "an error occured on the server")
+
+
 '''
 @TODO implement endpoint
     GET /drinks-detail
@@ -48,6 +70,25 @@ def test():
     where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+
+
+@app.route("/drinks-detail")
+@requires_auth(permission="get:drinks-detail")
+def get_drinks_details(payload):
+    try:
+        page = request.args.get("page", 1)
+        all_drinks = Drink.query.paginate(
+                        page=page,
+                        max_per_page=TOTAL_ITEMS_PER_PAGE)
+        drinks = [drink.long() for drink in all_drinks.items]
+
+        return jsonify({
+            "success": True,
+            "drinks": drinks
+        })
+
+    except Exception as e:
+        abort(500, "an error occured on the server")
 
 
 '''
@@ -121,6 +162,15 @@ def unprocessable(error):
 '''
 
 
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": f"{error}",
+    }), 404
+
+
 '''
 @TODO implement error handler for AuthError
     error handler should conform to general task above
@@ -130,5 +180,6 @@ def unprocessable(error):
 @app.errorhandler(AuthError)
 def auth_errors(error):
     return jsonify({
-        "error": error.status_code
-    })
+        "error": error.status_code,
+        "message": error.error
+    }), error.status_code
