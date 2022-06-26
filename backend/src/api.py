@@ -45,20 +45,20 @@ def test(payload):
 
 @app.route("/drinks", methods=["GET"])
 def get_drinks():
-    try:
-        page = request.args.get("page", 1)
-        all_drinks = Drink.query.paginate(
-                        page=page,
-                        max_per_page=TOTAL_ITEMS_PER_PAGE)
-        drinks = [drink.short() for drink in all_drinks.items]
+    # try:
+    page = request.args.get("page", 1)
+    all_drinks = Drink.query.paginate(
+                    page=page,
+                    max_per_page=TOTAL_ITEMS_PER_PAGE)
+    drinks = [drink.short() for drink in all_drinks.items]
 
-        return jsonify({
-            "success": True,
-            "drinks": drinks
-        })
+    return jsonify({
+        "success": True,
+        "drinks": drinks
+    })
 
-    except Exception as e:
-        abort(500, "an error occured on the server")
+    # except Exception as e:
+    #     abort(500, "an error occured on the server")
 
 
 '''
@@ -101,6 +101,29 @@ def get_drinks_details(payload):
     where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+
+
+@app.route("/drinks", methods=["POST"])
+@requires_auth(permission="post:drinks")
+def create_drink(payload):
+    data = request.get_json()
+    required_fields = ["title", "recipe"]
+    required_recipe = ["color", "name", "parts"]
+
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"required field missing: {field}")
+
+    for recipe in required_recipe:
+        if recipe not in data["recipe"].keys():
+            abort(400, f"required recipe attribute missing: {recipe}")
+
+    print(json.dumps(data["recipe"]))
+    drink = Drink(title=data["title"],
+                  recipe=f'[{json.dumps(data["recipe"])}]')
+    drink.insert()
+
+    return jsonify({"hello": "hello"})
 
 
 '''
@@ -169,6 +192,15 @@ def not_found(error):
         "error": 404,
         "message": f"{error}",
     }), 404
+
+
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": f"{error}"
+    }), 400
 
 
 '''
