@@ -116,7 +116,7 @@ def create_drink(payload):
                 abort(400, f"required field missing: {field}")
 
         for recipe in required_recipe:
-            if recipe not in data["recipe"].keys():
+            if recipe not in data["recipe"]:
                 abort(400, f"required recipe attribute missing: {recipe}")
 
         drink = Drink(title=data["title"],
