@@ -21,7 +21,7 @@ TOTAL_ITEMS_PER_PAGE = 10
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 # ROUTES
 
@@ -106,24 +106,33 @@ def get_drinks_details(payload):
 @app.route("/drinks", methods=["POST"])
 @requires_auth(permission="post:drinks")
 def create_drink(payload):
-    data = request.get_json()
-    required_fields = ["title", "recipe"]
-    required_recipe = ["color", "name", "parts"]
+    try:
+        data = request.get_json()
+        required_fields = ["title", "recipe"]
+        required_recipe = ["color", "name", "parts"]
 
-    for field in required_fields:
-        if field not in data:
-            abort(400, f"required field missing: {field}")
+        for field in required_fields:
+            if field not in data:
+                abort(400, f"required field missing: {field}")
 
-    for recipe in required_recipe:
-        if recipe not in data["recipe"].keys():
-            abort(400, f"required recipe attribute missing: {recipe}")
+        for recipe in required_recipe:
+            if recipe not in data["recipe"].keys():
+                abort(400, f"required recipe attribute missing: {recipe}")
 
-    print(json.dumps(data["recipe"]))
-    drink = Drink(title=data["title"],
-                  recipe=f'[{json.dumps(data["recipe"])}]')
-    drink.insert()
+        print(json.dumps(data["recipe"]))
+        drink = Drink(title=data["title"],
+                      recipe=f'[{json.dumps(data["recipe"])}]')
+        drink.insert()
 
-    return jsonify({"hello": "hello"})
+        return jsonify({
+            "success": True,
+            "drinks": drink.long()
+        })
+    except exc.IntegrityError:
+        abort(409, f"title ({data['title']}) -- already exists")
+
+    # except Exception:
+    #     abort(500, "an error occured on the server")
 
 
 '''
@@ -140,6 +149,30 @@ def create_drink(payload):
 '''
 
 
+@app.route("/drinks/<int:id>", methods=["PATCH"])
+@requires_auth(permission="patch:drinks")
+def update_drink(payload, id):
+    drink = Drink.query.get(id)
+    data = request.get_json()
+
+    if drink is None:
+        abort(404, f"drink with id:{id} not found")
+
+    for field in data:
+        if field.lower() == "recipe":
+            value = f"[{json.dumps(data[field])}]"
+            setattr(drink, field, value)
+
+        setattr(drink, field, data[field])
+
+    drink.update()
+
+    return jsonify({
+        "sucess": True,
+        "drinks": [drink.long()]
+    })
+
+
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
@@ -151,6 +184,22 @@ def create_drink(payload):
     where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+
+
+@app.route("/drinks/<int:id>", methods=["DELETE"])
+@requires_auth(permission="delete:drinks")
+def delete_drink(payload, id):
+    drink = Drink.query.get(id)
+
+    if drink is None:
+        abort(404, f"drink with id:{id} was not found")
+
+    drink.delete()
+
+    return jsonify({
+        "success": True,
+        "delete": id
+    })
 
 
 # Error Handling
@@ -201,6 +250,51 @@ def bad_request(error):
         "error": 400,
         "message": f"{error}"
     }), 400
+
+
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": f"{error}",
+    }), 401
+
+
+@app.errorhandler(403)
+def forbidden(error):
+    return jsonify({
+        "success": False,
+        "error": 403,
+        "message": f"{error}",
+    }), 403
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({
+        "success": False,
+        "error": 405,
+        "message": f"{error}",
+    }), 405
+
+
+@app.errorhandler(409)
+def conflict(error):
+    return jsonify({
+        "success": False,
+        "error": 409,
+        "message": f"{error}",
+    }), 409
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": f"{error}",
+    }), 500
 
 
 '''
