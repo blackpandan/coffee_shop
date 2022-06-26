@@ -69,7 +69,7 @@ def check_permissions(permission, payload: dict):
     if "permissions" not in payload:
         raise AuthError("permission not in payload", 400)
     if permission not in payload["permissions"]:
-        raise AuthError("not permitted to perform action", 401)
+        raise AuthError("not permitted to perform action", 403)
 
 
 '''
@@ -146,10 +146,10 @@ def verify_decode_jwt(token):
 
         # _request_ctx_stack.top.current_user = payload
 
-        raise AuthError({
-            "code": "invalid_header",
-            "description": "unable to find the appropriate key"
-        }, 401)
+    raise AuthError({
+        "code": "invalid_header",
+        "description": "unable to find the appropriate key"
+    }, 401)
     # raise Exception('Not Implemented')
 
 
