@@ -108,6 +108,7 @@ def get_drinks_details(payload):
 def create_drink(payload):
     try:
         data = request.get_json()
+        print(data)
         required_fields = ["title", "recipe"]
         required_recipe = ["color", "name", "parts"]
 
@@ -116,11 +117,27 @@ def create_drink(payload):
                 abort(400, f"required field missing: {field}")
 
         for recipe in required_recipe:
-            if recipe not in data["recipe"]:
-                abort(400, f"required recipe attribute missing: {recipe}")
+            ingredients = data["recipe"]
+            if type(ingredients) is list:
+                for item in ingredients:
+                    if recipe not in item:
+                        print("\n recipe")
+                        print(recipe)
+                        abort(400,
+                              f"required recipe attribute missing: {recipe}")
+
+                    value = json.dumps(ingredients)
+
+            else:
+                if recipe not in ingredients:
+                    print("\n recipe")
+                    print(recipe)
+                    abort(400, f"required recipe attribute missing: {recipe}")
+
+                value = f'[{json.dumps(ingredients)}]'
 
         drink = Drink(title=data["title"],
-                      recipe=f'[{json.dumps(data["recipe"])}]')
+                      recipe=value)
         drink.insert()
 
         return jsonify({
@@ -159,7 +176,10 @@ def update_drink(payload, id):
 
     for field in data:
         if field.lower() == "recipe":
-            value = f"[{json.dumps(data[field])}]"
+            if type(data["recipe"]) == list:
+                value = f"{json.dumps(data['recipe'])}"
+            else:
+                value = f"[{json.dumps(data[field])}]"
             setattr(drink, field, value)
 
         setattr(drink, field, data[field])
