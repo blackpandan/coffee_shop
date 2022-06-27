@@ -108,7 +108,6 @@ def get_drinks_details(payload):
 def create_drink(payload):
     try:
         data = request.get_json()
-        print(data)
         required_fields = ["title", "recipe"]
         required_recipe = ["color", "name", "parts"]
 
@@ -121,8 +120,6 @@ def create_drink(payload):
             if type(ingredients) is list:
                 for item in ingredients:
                     if recipe not in item:
-                        print("\n recipe")
-                        print(recipe)
                         abort(400,
                               f"required recipe attribute missing: {recipe}")
 
@@ -130,8 +127,6 @@ def create_drink(payload):
 
             else:
                 if recipe not in ingredients:
-                    print("\n recipe")
-                    print(recipe)
                     abort(400, f"required recipe attribute missing: {recipe}")
 
                 value = f'[{json.dumps(ingredients)}]'
