@@ -11,10 +11,10 @@ the frontend was made with angular, ionic and typescript.
 ---
 ## **GETTING STARTED**
 ---
-## perequisites & installation
+## **Perequisites & Installation**
 packages need to be installed in order to get the app running, backend dependecies are installed using pip and frontend npm
 
-### Backend
+### **Backend**
 - install python if it's not installed from the [official website](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
 
 - create a virtual environment in other to have an isolated system more info [here](https://docs.python.org/3/library/venv.html#:~:text=A%20virtual%20environment%20is%20a,part%20of%20your%20operating%20system.)
@@ -48,7 +48,24 @@ packages need to be installed in order to get the app running, backend dependeci
     flask run
    ```
 
+### **Frontend**
 
+- install npm page manager and node runtime environment from [here](https://nodejs.com/en/download).
+
+- install ionic ( needed to run serve the frontend ) from [here](https://ionicframework.com/docs/intro/cli).
+
+- to install project dependencies change directory to frontend and run
+    ```bash
+    npm install 
+    ```
+
+- you would need to change variables in ``` ./src/environments/environments.ts``` to match your own
+
+- finally run the project in dev mode with ssl support using
+
+    ```bash
+    ionic serve --ssl
+    ```
 
 
 
