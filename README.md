@@ -67,5 +67,18 @@ packages need to be installed in order to get the app running, backend dependeci
     ionic serve --ssl
     ```
 
+### **setup auth0**
+
+- create an account, application and api on [auth0](https://auth0.com)
+
+- enable RBAC for the account 
+
+---
+### **Test**
+---
+download and install [postman](https://getpostman.com/) into order to run tests
 
 
+- import the postman collection from ```./starter_code/backend/udacity-fsnd-udaspicelatte.postman_collection.json```
+
+- you would need to register 
