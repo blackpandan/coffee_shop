@@ -161,6 +161,19 @@ this enpoint handles all processes for reading, creating, deleting and updating 
 
     it returns a json response that contains the ```id``` of the deleted drink
 
+    sample request:
+    ```
+    curl -L -X DELETE localhost:5000/drinks/2 -H 'Authorization: Bearer {token}'
+    ```
+
+    response:
+    ```json
+    {
+      "delete": 2,
+      "success": true
+    }
+    ```
+
 
 -  **Creating Drinks**: the api provides this enpoint which accepts certain paramters and adds a new ```drink``` to the database, the mothod used is POST.
 
@@ -174,3 +187,73 @@ this enpoint handles all processes for reading, creating, deleting and updating 
     POST {baseUrl}/drinks
     ```
 
+    sample request:
+    ```
+    curl -L -X POST 'localhost:5000/drinks' \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer {token}'\
+    --data-raw '{
+        "title": "Water0",
+        "recipe": {
+            "name": "Water",
+            "color": "blue",
+            "parts": 1
+        }
+    }
+    ```
+
+    response:
+    ```json
+    {
+    "drinks": {
+        "id": 1,
+        "recipe": [
+            {
+                "color": "blue",
+                "name": "Water",
+                "parts": 1
+            }
+        ],
+        "title": "Water0"
+    },
+    "success": true
+    }
+    ```
+
+- **Updating Drinks**: this api provides an endpoint for updating a drink detail using PATCH method sending a request that contains the ```property``` to be updated:
+
+    parameters:
+
+    - title - ```required```: this is a ```String``` that represents the title of the drink.
+
+    - recipe - ```required```: this is an ```array``` of ```objects``` that represent the recipe to make the ```drink```, each object in the array must contain ```color, name, parts```
+
+    sample request:
+    ```
+    curl -L -X PATCH 'localhost:5000/drinks/1' \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer {token}' \
+    --data-raw '{
+        "title": "Water5"
+    }'
+    ```
+
+    reponse:
+    ```json
+    {
+    "drinks": [
+        {
+            "id": 1,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "name": "Water",
+                    "parts": 1
+                }
+            ],
+            "title": "Water5"
+        }
+    ],
+    "sucess": true
+    }
+    ```
