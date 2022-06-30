@@ -125,10 +125,17 @@ this enpoint handles all processes for reading, creating, deleting and updating 
 - **Retrieving All Drinks With More Details**: in order to retrieve the full version of all drinks, a get request is sent to this endpoint with a ```page``` parameter in the url.
 
     ```
-    Get {baseUrl}/drinks-detail
+    GET {baseUrl}/drinks-detail
     ```
 
     on successful execution it return a reponse containing an ```array``` of drinks, and a ```success``` boolean attribute.
 
 
-- **Deleting Drinks**: this endpoint is provided to delete drinks by ```id```, it accepts a get request
+- **Deleting Drinks**: this endpoint is provided to delete drinks by ```id```, it accepts a get request and the ```id``` of the drink in the url.
+
+    ```
+    GET {baseUrl}/drinks/{id} 
+    ```
+
+    it returns a json response that contains the ```id``` of the deleted drink
+
