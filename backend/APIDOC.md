@@ -139,3 +139,16 @@ this enpoint handles all processes for reading, creating, deleting and updating 
 
     it returns a json response that contains the ```id``` of the deleted drink
 
+
+-  **Creating Drinks**: the api provides this enpoint which accepts certain paramters and adds a new ```drink``` to the database, the mothod used is POST.
+
+    parameters:
+
+    - title - ```required```: this is a ```String``` that represents the title of the drink.
+
+    - recipe - ```required```: this is an ```array``` of ```objects``` that represent the recipe to make the ```drink```, each object in the array must contain ```color, name, parts```
+
+    ```
+    POST {baseUrl}/drinks
+    ```
+
