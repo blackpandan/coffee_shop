@@ -90,7 +90,13 @@ this enpoint handles all processes for reading, creating, deleting and updating 
     GET {baseUrl}/drinks
     ```
 
-    sample response:
+    sample request:
+
+    ```curl
+    curl --location --request GET 'localhost:5000/drinks' --header 'Authorization: Bearer {token}'
+    ```
+
+    response:
 
     ```json
     {
@@ -113,15 +119,6 @@ this enpoint handles all processes for reading, creating, deleting and updating 
     an ```array``` of ```drinks``` and a ```status``` attribute containing a ```boolean``` which represent the state of sucess is returned. 
 
 
-- **Retrieving Individual Drink Detail**: in order to retrive the details of a specific drink, a get request is sent to this endpoint with the ```id``` of the drink as a url parameter
-
-    ```
-    GET {baseUrl}/drinks/{id}
-    ```
-
-    it return a ```drink``` ```array``` and a ```success``` property.
-
-
 - **Retrieving All Drinks With More Details**: in order to retrieve the full version of all drinks, a get request is sent to this endpoint with a ```page``` parameter in the url.
 
     ```
@@ -129,6 +126,31 @@ this enpoint handles all processes for reading, creating, deleting and updating 
     ```
 
     on successful execution it return a reponse containing an ```array``` of drinks, and a ```success``` boolean attribute.
+
+    sample request:
+    ```
+    curl --location --request GET 'localhost:5000/drinks-detail' --header 'Authorization: Bearer {token}'
+    ```
+
+    response:
+   ```json
+    {
+        "drinks": [
+        {
+            "id": 2,
+            "recipe": [
+               {
+                  "color": "blue",
+                  "name": "Water",
+                  "parts": 1
+                }
+            ],
+            "title": "Water0"
+        }
+        ],
+        "success": true
+    }
+    ```
 
 
 - **Deleting Drinks**: this endpoint is provided to delete drinks by ```id```, it accepts a get request and the ```id``` of the drink in the url.
