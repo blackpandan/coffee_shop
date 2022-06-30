@@ -228,6 +228,10 @@ this enpoint handles all processes for reading, creating, deleting and updating 
 
     - recipe - ```required```: this is an ```array``` of ```objects``` that represent the recipe to make the ```drink```, each object in the array must contain ```color, name, parts```
 
+    ```
+    PATCH {baseUrl}/drinks/{id}
+    ```
+
     sample request:
     ```
     curl -L -X PATCH 'localhost:5000/drinks/1' \
