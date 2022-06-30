@@ -71,7 +71,25 @@ packages need to be installed in order to get the app running, backend dependeci
 
 - create an account, application and api on [auth0](https://auth0.com)
 
-- enable RBAC for the account 
+- Create a new Auth0 Account
+- Select a unique tenant domain
+- Create a new, single page web application
+- Create a new API
+   - in API Settings:
+     - Enable RBAC
+     - Enable Add Permissions in the Access Token
+- Create new API permissions:
+   - `get:drinks`
+   - `get:drinks-detail`
+   - `post:drinks`
+   - `patch:drinks`
+   - `delete:drinks`
+- Create new roles for:
+   - Barista
+     - can `get:drinks-detail`
+     - can `get:drinks`
+   - Manager
+     - can perform all actions
 
 ---
 ### **Test**
@@ -81,4 +99,10 @@ download and install [postman](https://getpostman.com/) into order to run tests
 
 - import the postman collection from ```./starter_code/backend/udacity-fsnd-udaspicelatte.postman_collection.json```
 
-- you would need to register 
+- Right-clicking the collection folder for barista and manager, navigate to the authorization tab, and including the JWT in the token field (you should have noted these JWTs).
+
+---
+## **API REFERENCE**
+---
+
+the api documentation is located [here](./backend/APIDOC.md)
