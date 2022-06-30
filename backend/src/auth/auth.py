@@ -38,7 +38,7 @@ def get_token_auth_header():
     header = request.headers.get("Authorization")
 
     if header is None:
-        raise AuthError("no header present", 400)
+        raise AuthError("no header present", 401)
 
     authorization = header.split(" ")
 
