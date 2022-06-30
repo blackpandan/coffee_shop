@@ -99,4 +99,10 @@ download and install [postman](https://getpostman.com/) into order to run tests
 
 - import the postman collection from ```./starter_code/backend/udacity-fsnd-udaspicelatte.postman_collection.json```
 
-- Right-clicking the collection folder for barista and manager, navigate to the authorization tab, and including the JWT in the token field (you should have noted these JWTs). 
+- Right-clicking the collection folder for barista and manager, navigate to the authorization tab, and including the JWT in the token field (you should have noted these JWTs).
+
+---
+## **API REFERENCE**
+---
+
+the api documentation is located [here](./backend/APIDOC.md)
